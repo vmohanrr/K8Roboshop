@@ -1,0 +1,84 @@
+pipeline{
+    agent any
+     
+        stages{
+            stage("Git Checkout"){
+                steps{
+                    script{
+                        git branch: 'dev', credentialsId: 'git_credentials', url: 'https://github.com/vmohanrr/DevopsDemo.git'
+
+                }
+            }
+            }
+            stage ("Unit Testing"){
+                steps{
+                    script{
+                        sh "mvn test"
+
+                }
+
+            }
+            }
+
+            stage ("Integration Testing") {
+                steps{
+                    script{
+                        sh "mvn verify -DSkipUnitTesting"
+
+                }
+
+            }
+        }
+            stage ("Static code Analysis") {
+                steps{
+                    script{
+                        withSonarQubeEnv(credentialsId: 'sonar-api') {
+                            sh "mvn clean package sonar:sonar"
+                            }
+                       
+
+                }
+
+            }
+        }
+
+                    stage ("Quallity Gate status") {
+                steps{
+                    script{
+                        waitForQualityGate abortPipeline: false, credentialsId: 'sonar-api' 
+                           
+                            
+
+                         }
+
+             }
+        }
+
+                            stage ("Upload artifacts to Nexus") {
+                steps{
+                    script{
+                        nexusArtifactUploader artifacts: 
+                        [
+                            [ artifactId: 'springboot',
+                             classifier: '', 
+                             file: 'target/springboot-1.0.0.jar', 
+                             type: 'jar']
+                             ], 
+                             credentialsId: 'nexus_creds', 
+                             groupId: 'com.example', 
+                             nexusUrl: '3.12.71.146:8081/', 
+                             nexusVersion: 'nexus3', 
+                             protocol: 'http', 
+                             repository: 'javawebapp-release', 
+                             version: '1.0.0'
+                           
+                            
+
+                         }
+
+             }
+        }
+     }
+
+        }
+
