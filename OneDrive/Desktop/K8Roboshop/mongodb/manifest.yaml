@@ -10,7 +10,7 @@ spec:
   containers:
   - name: mongodb
     imagePullPolicy: Always
-    image: ramamohanrr/mongodb:v1
+    image: ramamohanrr/mongodb:k8
     ports:
       - containerPort: 27017
 ---
