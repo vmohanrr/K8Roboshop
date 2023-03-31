@@ -17,7 +17,7 @@ spec:
   containers:
   - name: catalogue
     imagePullPolicy: Always
-    image: techworldwithsiva/catalogue:v1
+    image: ramamohanrr/catalogue:k6
     envFrom:
     - configMapRef:
         name: catalogue-config
